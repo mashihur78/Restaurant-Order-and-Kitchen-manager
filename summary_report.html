@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Summary Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Poppins;background:#f4f6fb}
+.app-layout{display:flex;min-height:100vh}
+
+.sidebar{
+width:250px;background:#043362;color:#fff;
+padding:22px 18px;display:flex;flex-direction:column;justify-content:space-between
+}
+.sidebar-btn{background:rgba(255,255,255,.08);border:none;color:#fff;padding:8px;border-radius:6px;text-align:left;cursor:pointer;margin-bottom:6px;}
+.sidebar-btn.active{background:#fff;color:#043362;font-weight:600}
+.logout-btn{background:#ef4444;border:none;color:#fff;padding:8px;border-radius:6px;cursor:pointer}
+
+.main{flex:1;padding:20px;display:flex;flex-direction:column;gap:16px}
+
+.top-nav{
+background:#fff;padding:10px 16px;border-radius:10px;
+display:flex;justify-content:space-between;
+box-shadow:0 6px 18px rgba(0,0,0,.08)
+}
+
+.card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+
+.summary-cards{display:flex;gap:20px;margin-bottom:20px;flex-wrap:wrap}
+.card-small{flex:1;min-width:150px;text-align:center;padding:20px;background:#f9fafb;border-radius:10px;box-shadow:0 5px 15px rgba(0,0,0,.05)}
+.card-small h2{margin-bottom:6px;color:#043362;font-size:1.5rem}
+.card-small p{color:#555;margin:0}
+
+canvas{margin-top:20px;border-radius:10px;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:20px}
+
+</style>
+</head>
+<body>
+
+<div class="app-layout">
+
+<aside class="sidebar">
+<div>
+<div class="sidebar-btn">Dashboard</div>
+<div class="sidebar-btn">Kitchen</div>
+<div class="sidebar-btn">Tables</div>
+<div class="sidebar-btn">Staff Management</div>
+<div class="sidebar-btn">Payment</div>
+<div class="sidebar-btn active">Summary Report</div>
+</div>
+<button class="logout-btn">Logout</button>
+</aside>
+
+<main class="main">
+
+<div class="top-nav">
+<strong>Summary Report</strong>
+<span>Admin</span>
+</div>
+
+<div class="summary-cards">
+<div class="card-small">
+<h2 id="totalOrders">0</h2>
+<p>Total Orders</p>
+</div>
+<div class="card-small">
+<h2 id="totalRevenue">$0</h2>
+<p>Total Revenue</p>
+</div>
+<div class="card-small">
+<h2 id="mostSold">-</h2>
+<p>Most Sold Item</p>
+</div>
+</div>
+
+<div class="card">
+<canvas id="salesChart"></canvas>
+</div>
+
+</main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const orders=[
+{id:1,item:'Burger',qty:10,price:5},
+{id:2,item:'Fries',qty:7,price:3},
+{id:3,item:'Coke',qty:15,price:1.5},
+{id:4,item:'Pizza',qty:5,price:8}
+];
+
+const totalOrders=orders.reduce((sum,o)=>sum+o.qty,0);
+const totalRevenue=orders.reduce((sum,o)=>sum+o.qty*o.price,0);
+const mostSoldItem=orders.reduce((max,o)=>o.qty>max.qty?o:max,orders[0]).item;
+
+document.getElementById('totalOrders').textContent=totalOrders;
+document.getElementById('totalRevenue').textContent='$'+totalRevenue.toFixed(2);
+document.getElementById('mostSold').textContent=mostSoldItem;
+
+// Chart
+const labels=orders.map(o=>o.item);
+const data=orders.map(o=>o.qty);
+
+const ctx=document.getElementById('salesChart').getContext('2d');
+new Chart(ctx,{
+type:'bar',
+data:{
+labels:labels,
+datasets:[{
+label:'Quantity Sold',
+data:data,
+backgroundColor:'#2563eb',
+borderRadius:6
+}]
+},
+options:{
+responsive:true,
+plugins:{legend:{display:false},title:{display:true,text:'Sales Summary'}},
+scales:{y:{beginAtZero:true}}
+}
+});
+</script>
+
+</body>
+</html>

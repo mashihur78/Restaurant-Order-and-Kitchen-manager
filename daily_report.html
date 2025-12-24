@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Daily Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Poppins;background:#f4f6fb}
+.app-layout{display:flex;min-height:100vh}
+
+.sidebar{
+width:250px;background:#043362;color:#fff;
+padding:22px 18px;display:flex;flex-direction:column;justify-content:space-between
+}
+.sidebar-btn{background:rgba(255,255,255,.08);border:none;color:#fff;padding:8px;border-radius:6px;text-align:left;cursor:pointer;margin-bottom:6px;}
+.sidebar-btn.active{background:#fff;color:#043362;font-weight:600}
+.logout-btn{background:#ef4444;border:none;color:#fff;padding:8px;border-radius:6px;cursor:pointer}
+
+.main{flex:1;padding:20px;display:flex;flex-direction:column;gap:16px}
+
+.top-nav{
+background:#fff;padding:10px 16px;border-radius:10px;
+display:flex;justify-content:space-between;
+box-shadow:0 6px 18px rgba(0,0,0,.08)
+}
+
+.card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+
+.filter-row{
+display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;
+}
+.filter-row input, .filter-row button{
+padding:8px 12px;border-radius:6px;border:1px solid #d1d5db;font-size:0.9rem;
+}
+.filter-row button{
+background:#1c7ced;color:#fff;border:none;cursor:pointer;
+}
+.filter-row button:hover{background:#1665c3}
+
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{padding:8px;border-bottom:1px solid #e5e7eb}
+th{background:#f9fafb;font-weight:500}
+.total-row td{font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="app-layout">
+
+<aside class="sidebar">
+<div>
+<div class="sidebar-btn">Dashboard</div>
+<div class="sidebar-btn">Kitchen</div>
+<div class="sidebar-btn">Tables</div>
+<div class="sidebar-btn">Staff Management</div>
+<div class="sidebar-btn">Payment</div>
+<div class="sidebar-btn active">Daily Report</div>
+</div>
+<button class="logout-btn">Logout</button>
+</aside>
+
+<main class="main">
+
+<div class="top-nav">
+<strong>Daily Report</strong>
+<span>Admin</span>
+</div>
+
+<div class="card">
+<div class="filter-row">
+<input type="date" id="reportDate" />
+<button onclick="generateReport()">Generate Report</button>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Invoice #</th>
+<th>Table</th>
+<th>Cashier</th>
+<th>Items</th>
+<th>Total ($)</th>
+</tr>
+</thead>
+<tbody id="reportBody">
+<!-- Report data inserted here -->
+</tbody>
+<tfoot>
+<tr class="total-row">
+<td colspan="4">Grand Total</td>
+<td id="grandTotal">0</td>
+</tr>
+</tfoot>
+</table>
+</div>
+
+</main>
+</div>
+
+<script>
+const invoices=[
+{id:'001',table:'T01',cashier:'Admin',items:3,total:18.5,date:'2025-12-21'},
+{id:'002',table:'T02',cashier:'Admin',items:2,total:12.0,date:'2025-12-21'},
+{id:'003',table:'T03',cashier:'Admin',items:4,total:25.0,date:'2025-12-21'},
+{id:'004',table:'T01',cashier:'Admin',items:1,total:5.0,date:'2025-12-20'}
+];
+
+function generateReport(){
+const selectedDate=document.getElementById('reportDate').value;
+const tbody=document.getElementById('reportBody');
+tbody.innerHTML='';
+let grandTotal=0;
+
+const filtered=invoices.filter(inv=>inv.date===selectedDate);
+filtered.forEach(inv=>{
+const row=document.createElement('tr');
+row.innerHTML=`
+<td>${inv.id}</td>
+<td>${inv.table}</td>
+<td>${inv.cashier}</td>
+<td>${inv.items}</td>
+<td>${inv.total.toFixed(2)}</td>
+`;
+tbody.appendChild(row);
+grandTotal+=inv.total;
+});
+
+document.getElementById('grandTotal').textContent=grandTotal.toFixed(2);
+
+if(filtered.length===0){
+const row=document.createElement('tr');
+row.innerHTML=`<td colspan="5" style="text-align:center;color:#6b7280;">No records found for this date</td>`;
+tbody.appendChild(row);
+}
+}
+
+// Auto-fill today's date
+document.addEventListener("DOMContentLoaded",()=>{
+const today=new Date().toISOString().split('T')[0];
+document.getElementById('reportDate').value=today;
+generateReport();
+});
+</script>
+
+</body>
+</html>
